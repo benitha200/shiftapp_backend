@@ -5,13 +5,18 @@ from .serializers import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 
 # Create your views here.
 
 class ShiftListCreateView(generics.ListCreateAPIView):
-    queryset=Shift.objects.all().order_by('-id')
-    serializer_class=ShiftSerializer
+    queryset = Shift.objects.all().order_by('-id')
+    serializer_class = ShiftSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
 
 class ShiftRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset=Shift.objects.all()
