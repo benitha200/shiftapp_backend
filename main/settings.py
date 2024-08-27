@@ -26,8 +26,10 @@ SECRET_KEY = 'django-insecure-li^e+rh8(1+(#ayz01jolzjbx46m2l)j%+)ytgo(m#+kjkf=r@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.22.212']
+ALLOWED_HOSTS = ['*']  # Be careful with this in production
 
+CORS_ALLOW_ALL_ORIGINS = True  # For development only
 
 # Application definition
 
@@ -57,10 +59,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:19006",
-    "http://localhost:8081"
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:19006",
+#     "http://localhost:8081",
+#     "http://192.168.22.212:3307",
+#     "expo://192.168.22.212:3307",
+
+# ]
 
 CORS_ALLOW_HEADERS = [
     'content-type',

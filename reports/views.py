@@ -62,7 +62,7 @@ class ShiftSummaryReportView(APIView):
 
 
     # Retrieve all shifts within the specified date range
-    shifts = Shift.objects.filter(date__range=[start_date, end_date]).order_by(-id)
+    shifts = Shift.objects.filter(date__range=[start_date, end_date]).order_by('-id')
 
     if not shifts.exists():
       return Response({'detail': 'No shifts found within the specified date range.'}, status=status.HTTP_404_NOT_FOUND)
