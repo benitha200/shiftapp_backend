@@ -10,6 +10,14 @@ from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
+# class ShiftListCreateView(generics.ListCreateAPIView):
+#     queryset = Shift.objects.all().order_by('-id')
+#     serializer_class = ShiftSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def perform_create(self, serializer):
+#         serializer.save(created_by=self.request.user)
+
 class ShiftListCreateView(generics.ListCreateAPIView):
     queryset = Shift.objects.all().order_by('-id')
     serializer_class = ShiftSerializer
@@ -17,6 +25,15 @@ class ShiftListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
 
 class ShiftRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset=Shift.objects.all()

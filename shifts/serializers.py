@@ -2,12 +2,25 @@ from rest_framework import serializers
 from .models import Shift, ShiftDetails
 from accounts.serializers import UserSerializer
 
+# class ShiftSerializer(serializers.ModelSerializer):
+#     created_by = UserSerializer(read_only=True)
+#     class Meta:
+#         model = Shift
+#         fields = ['id', 'shift_no', 'activity', 'date', 'shift_type', 'supplier', 'coffee_type', 'output_batchno', 'location_of_batch', 'created_by', 'created_at']
+#         read_only_fields = ['created_by', 'created_at']
+
 class ShiftSerializer(serializers.ModelSerializer):
     created_by = UserSerializer(read_only=True)
+
     class Meta:
         model = Shift
         fields = ['id', 'shift_no', 'activity', 'date', 'shift_type', 'supplier', 'coffee_type', 'output_batchno', 'location_of_batch', 'created_by', 'created_at']
         read_only_fields = ['created_by', 'created_at']
+
+    def validate_shift_no(self, value):
+        if Shift.objects.filter(shift_no=value).exists():
+            raise serializers.ValidationError(_("Shift no already exists"))
+        return value
 
 
 class ShiftDetailsSerializer(serializers.ModelSerializer):

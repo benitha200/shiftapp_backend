@@ -89,7 +89,7 @@ class ShiftSummaryReportView(APIView):
           'activity': shift.activity,
           'total_input_kgs': total_input_kgs,
           'total_output_kgs': total_output_kgs,
-          'input_output_ratio': input_output_ratio,
+          # 'input_output_ratio': input_output_ratio,
           'production_loss': production_loss,
           'production_gain': production_gain,
       })
