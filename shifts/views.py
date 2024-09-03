@@ -35,9 +35,36 @@ class ShiftListCreateView(generics.ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
 
+# class ShiftRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+#     queryset=Shift.objects.all()
+#     serializer_class=ShiftSerializer
+
 class ShiftRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset=Shift.objects.all()
-    serializer_class=ShiftSerializer
+    queryset = Shift.objects.all()
+    serializer_class = ShiftSerializer
+
+    def patch(self, request, *args, **kwargs):
+        """
+        Partially update a Shift instance, specifically updating the status field.
+        """
+        partial = True
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        # Return the updated instance
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def perform_update(self, serializer):
+        """
+        Save the updated status field in the Shift instance.
+        """
+        # Check if 'status' is in the request data to update it
+        if 'status' in serializer.validated_data:
+            serializer.save(status=serializer.validated_data['status'])
+        else:
+            serializer.save()
 
 class ShiftDetailsListCreateView(generics.ListCreateAPIView):
     queryset=ShiftDetails.objects.all()

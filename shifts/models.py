@@ -12,8 +12,10 @@ class Shift(models.Model):
     coffee_type=models.CharField(max_length=255)
     output_batchno=models.IntegerField()
     location_of_batch=models.CharField(max_length=255)
+    status=models.BooleanField(default=False)
     created_by=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     created_at=models.DateTimeField(auto_now=True)
+
 
 
 class ShiftDetails(models.Model):
