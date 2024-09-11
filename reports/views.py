@@ -97,37 +97,78 @@ class ShiftSummaryReportView(APIView):
     return Response(report_data, status=status.HTTP_200_OK)
   
 
+# class ShiftDetailsReportView(APIView):
+#     def post(self, request, format=None):
+#         start_date = request.data.get('start_date')
+#         end_date = request.data.get('end_date')
+
+#         if not start_date or not end_date:
+#             return Response({'error':'start_date and end_date are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+#         # Retrieve all shifts within the specified date range
+#         shifts = Shift.objects.filter(date__range=[start_date, end_date]).order_by('-id')
+
+#         if not shifts.exists():
+#             return Response({'detail': 'No shifts found within the specified date range.'}, status=status.HTTP_404_NOT_FOUND)
+
+#         report_data = []
+#         for shift in shifts:
+#             shift_details = ShiftDetails.objects.filter(shift=shift)
+
+#             # You can aggregate or retrieve specific fields as needed
+#             for detail in shift_details:
+#                 report_data.append({
+#                     'shift_no': shift.shift_no,
+#                     'supplier': shift.supplier,  
+#                     'date': shift.date,
+#                     'activity': shift.activity,
+#                     'status': detail.entry_type,
+#                     'grade': detail.grade,  
+#                     'total_bags': detail.total_bags,  
+#                     'total_kgs': detail.total_kgs, 
+#                     'batchno_grn': detail.batchno_grn,  
+#                     'cell': detail.cell, 
+#                 })
+
+#         return Response(report_data, status=status.HTTP_200_OK)
+
 class ShiftDetailsReportView(APIView):
-    def post(self, request, format=None):
-        start_date = request.data.get('start_date')
-        end_date = request.data.get('end_date')
-
-        if not start_date or not end_date:
-            return Response({'error':'start_date and end_date are required.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Retrieve all shifts within the specified date range
+    def generate_report(self, start_date, end_date):
         shifts = Shift.objects.filter(date__range=[start_date, end_date]).order_by('-id')
-
+        
         if not shifts.exists():
-            return Response({'detail': 'No shifts found within the specified date range.'}, status=status.HTTP_404_NOT_FOUND)
+            return None
 
         report_data = []
         for shift in shifts:
             shift_details = ShiftDetails.objects.filter(shift=shift)
-
-            # You can aggregate or retrieve specific fields as needed
+            
             for detail in shift_details:
                 report_data.append({
                     'shift_no': shift.shift_no,
-                    'supplier': shift.supplier,  
+                    'supplier': shift.supplier,
                     'date': shift.date,
                     'activity': shift.activity,
                     'status': detail.entry_type,
-                    'grade': detail.grade,  
-                    'total_bags': detail.total_bags,  
-                    'total_kgs': detail.total_kgs, 
-                    'batchno_grn': detail.batchno_grn,  
-                    'cell': detail.cell, 
+                    'grade': detail.grade,
+                    'total_bags': detail.total_bags,
+                    'total_kgs': detail.total_kgs,
+                    'batchno_grn': detail.batchno_grn,
+                    'cell': detail.cell,
                 })
+        
+        return report_data
 
+    def post(self, request, format=None):
+        start_date = request.data.get('start_date')
+        end_date = request.data.get('end_date')
+        
+        if not start_date or not end_date:
+            return Response({'error':'start_date and end_date are required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        report_data = self.generate_report(start_date, end_date)
+        
+        if report_data is None:
+            return Response({'detail': 'No shifts found within the specified date range.'}, status=status.HTTP_404_NOT_FOUND)
+        
         return Response(report_data, status=status.HTTP_200_OK)
