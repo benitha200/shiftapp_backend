@@ -11,7 +11,8 @@ from shifts.views import (
 
 from reports.views import (
     ShiftSummaryReportView,
-    ShiftDetailsReportView
+    ShiftDetailsReportView,
+    AllShiftsReportView
 )
 
 urlpatterns = [
@@ -22,6 +23,7 @@ urlpatterns = [
     path('shiftdetail/<int:pk>/', ShiftDetailsByShiftIDView.as_view(), name='shiftdetails-by-shift-id'),
     path('shift-summary-report/',ShiftSummaryReportView.as_view(),name='shift-summary-report'),
     path('shift-details-report/',ShiftDetailsReportView.as_view(),name='shift-details-report'),
+    path('all-shifts-report/',AllShiftsReportView.as_view(),name='shift-details-report'),
     path('register/', UserRegistrationView.as_view(), name='register'),
     path('login/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

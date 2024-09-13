@@ -172,3 +172,49 @@ class ShiftDetailsReportView(APIView):
             return Response({'detail': 'No shifts found within the specified date range.'}, status=status.HTTP_404_NOT_FOUND)
         
         return Response(report_data, status=status.HTTP_200_OK)
+
+class AllShiftsReportView(APIView):
+    def generate_report(self, start_date, end_date):
+        shifts = Shift.objects.filter(date__range=[start_date, end_date]).order_by('-id')
+        
+        if not shifts.exists():
+            return None
+
+        report_data = []
+        for shift in shifts:
+            shift_details = ShiftDetails.objects.filter(shift=shift)
+            
+            for detail in shift_details:
+                report_data.append({
+                    'shift_no': shift.shift_no,
+                    'activity': shift.activity,
+                    'date': shift.date,
+                    'supplier': shift.supplier,
+                    'shift_type': shift.shift_type,
+                    'coffee_type': shift.coffee_type,
+                    'output_batchno': shift.output_batchno,
+                    'completion_status': shift.status,
+                    'grade': detail.grade,
+                    'total_kgs': detail.total_kgs,
+                    'total_bags': detail.total_bags,
+                    'batchno_grn': detail.batchno_grn,
+                    'cell': detail.cell,
+                    'entry_type': detail.entry_type,
+                })
+        
+        return report_data
+
+    def post(self, request, format=None):
+        start_date = request.data.get('start_date')
+        end_date = request.data.get('end_date')
+        
+        if not start_date or not end_date:
+            return Response({'error':'start_date and end_date are required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        report_data = self.generate_report(start_date, end_date)
+        
+        if report_data is None:
+            return Response({'detail': 'No shifts found within the specified date range.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        return Response(report_data, status=status.HTTP_200_OK)
+

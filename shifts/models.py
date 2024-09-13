@@ -34,7 +34,6 @@ class Shift(models.Model):
 
 class ShiftDetails(models.Model):
     shift=models.ForeignKey(Shift,on_delete=models.CASCADE)
-
     grade=models.CharField(max_length=50)
     total_kgs=models.IntegerField()
     total_bags=models.IntegerField()
