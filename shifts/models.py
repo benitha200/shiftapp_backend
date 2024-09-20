@@ -51,9 +51,7 @@ class ShiftBaggingOff(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.shift_no_bagging_off:
-            # Get the maximum shift_no_bagging_off value from the existing records
             max_shift_no = ShiftBaggingOff.objects.aggregate(Max('shift_no_bagging_off'))['shift_no_bagging_off__max']
-            # If there are no existing records, start with 1, otherwise increment by 1
             self.shift_no_bagging_off = 1 if max_shift_no is None else max_shift_no + 1
         super().save(*args, **kwargs)
 

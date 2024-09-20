@@ -86,32 +86,62 @@ class ShiftBaggingOffListCreateView(generics.ListCreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+# class ShiftBaggingOffRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = ShiftBaggingOff.objects.all()
+#     serializer_class = ShiftBaggingOffSerializer
+
+#     def patch(self, request, *args, **kwargs):
+#         """
+#         Partially update a ShiftBaggingOff instance, specifically updating the status field.
+#         """
+#         partial = True
+#         instance = self.get_object()
+#         serializer = self.get_serializer(instance, data=request.data, partial=partial)
+#         serializer.is_valid(raise_exception=True)
+#         self.perform_update(serializer)
+
+#         # Return the updated instance
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+#     def perform_update(self, serializer):
+#         """
+#         Save the updated status field in the ShiftBaggingOff instance.
+#         """
+#         # Check if 'status' is in the request data to update it
+#         if 'status' in serializer.validated_data:
+#             serializer.save(status=serializer.validated_data['status'])
+#         else:
+#             serializer.save()
+
 class ShiftBaggingOffRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ShiftBaggingOff.objects.all()
     serializer_class = ShiftBaggingOffSerializer
 
     def patch(self, request, *args, **kwargs):
         """
-        Partially update a ShiftBaggingOff instance, specifically updating the status field.
+        Partially update a ShiftBaggingOff instance, allowing updates to the status field only.
         """
-        partial = True
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
+        
+        # Check if only status is being updated
+        if set(request.data.keys()) == {'status'}:
+            instance.status = request.data['status']
+            instance.save()
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+        
+        # If other fields are included, use the default partial update logic
+        return self.partial_update(request, *args, **kwargs)
 
-        # Return the updated instance
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
 
     def perform_update(self, serializer):
         """
-        Save the updated status field in the ShiftBaggingOff instance.
+        Save the updated fields in the ShiftBaggingOff instance.
         """
-        # Check if 'status' is in the request data to update it
-        if 'status' in serializer.validated_data:
-            serializer.save(status=serializer.validated_data['status'])
-        else:
-            serializer.save()
+        serializer.save()
 
 class ShiftDetailsBaggingOffListCreateView(generics.ListCreateAPIView):
     queryset = ShiftDetailsBaggingOff.objects.all()
