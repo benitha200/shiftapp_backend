@@ -41,3 +41,40 @@ class ShiftDetails(models.Model):
     cell=models.CharField(max_length=50)
     entry_type=models.CharField(max_length=255)
 
+class ShiftBaggingOff(models.Model):
+    shift_no_bagging_off = models.IntegerField(unique=True, editable=False)
+    activity = models.CharField(max_length=255)
+    date = models.DateField()
+    status = models.BooleanField(default=False)
+    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.shift_no_bagging_off:
+            # Get the maximum shift_no_bagging_off value from the existing records
+            max_shift_no = ShiftBaggingOff.objects.aggregate(Max('shift_no_bagging_off'))['shift_no_bagging_off__max']
+            # If there are no existing records, start with 1, otherwise increment by 1
+            self.shift_no_bagging_off = 1 if max_shift_no is None else max_shift_no + 1
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Shift {self.shift_no_bagging_off}"
+
+
+
+class ShiftDetailsBaggingOff(models.Model):
+    shiftbaggingoff=models.ForeignKey(ShiftBaggingOff,on_delete=models.CASCADE)
+    grade=models.CharField(max_length=50)
+    total_kgs=models.IntegerField()
+    total_bags=models.IntegerField()
+    balance=models.IntegerField()
+    loss=models.IntegerField(default=0)
+    supplier = models.CharField(max_length=255)
+    cell = models.CharField(max_length=255)
+    stock_card = models.CharField(max_length=255)
+    lot_no = models.CharField(max_length=255,default=0)
+    batchno_grn=models.CharField(max_length=255,default=67)
+    parch_grade=models.CharField(max_length=255)
+    year=models.IntegerField()
+    entry_type=models.CharField(max_length=255)
+
