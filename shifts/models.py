@@ -18,14 +18,14 @@ class Shift(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.shift_no:
-            # Get the maximum shift_no value from the existing records
-            max_shift_no = Shift.objects.aggregate(Max('shift_no'))['shift_no__max']
-            # If there are no existing records, start with 1, otherwise increment by 1
-            self.shift_no = 1 if max_shift_no is None else max_shift_no + 1
+            # Get the maximum shift_no value from Shift and ShiftBaggingOff
+            max_shift_no = max(
+                Shift.objects.aggregate(Max('shift_no'))['shift_no__max'] or 0,
+                ShiftBaggingOff.objects.aggregate(Max('shift_no_bagging_off'))['shift_no_bagging_off__max'] or 0
+            )
+            # Increment by 1
+            self.shift_no = max_shift_no + 1
         super(Shift, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return f"Shift {self.shift_no}"
 
     def __str__(self):
         return f"Shift {self.shift_no}"
@@ -51,8 +51,11 @@ class ShiftBaggingOff(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.shift_no_bagging_off:
-            max_shift_no = Shift.objects.aggregate(Max('shift_no'))['shift_no__max']
-            self.shift_no_bagging_off = 1 if max_shift_no is None else max_shift_no + 1
+            max_shift_no = max(
+                Shift.objects.aggregate(Max('shift_no'))['shift_no__max'] or 0,
+                ShiftBaggingOff.objects.aggregate(Max('shift_no_bagging_off'))['shift_no_bagging_off__max'] or 0
+            )
+            self.shift_no_bagging_off = max_shift_no + 1
         super().save(*args, **kwargs)
 
     def __str__(self):
