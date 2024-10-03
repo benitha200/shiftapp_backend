@@ -13,6 +13,7 @@ class Shift(models.Model):
     output_batchno = models.IntegerField()
     location_of_batch = models.CharField(max_length=255)
     status = models.BooleanField(default=False)
+    crop_year=models.IntegerField(default=2024)
     created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
 
@@ -46,6 +47,7 @@ class ShiftBaggingOff(models.Model):
     activity = models.CharField(max_length=255)
     date = models.DateField()
     status = models.BooleanField(default=False)
+    crop_year=models.IntegerField(default=2024)
     created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 

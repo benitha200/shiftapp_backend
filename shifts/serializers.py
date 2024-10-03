@@ -1,35 +1,3 @@
-# from rest_framework import serializers
-# from .models import Shift, ShiftDetails
-# from accounts.serializers import UserSerializer
-
-
-# class ShiftSerializer(serializers.ModelSerializer):
-#     created_by = UserSerializer(read_only=True)
-
-#     class Meta:
-#         model = Shift
-#         fields = ['id', 'shift_no', 'activity', 'date', 'shift_type', 'supplier', 'coffee_type', 'output_batchno', 'location_of_batch', 'created_by', 'created_at','status']
-#         read_only_fields = ['created_by', 'created_at']
-
-#     def validate_shift_no(self, value):
-#         if Shift.objects.filter(shift_no=value).exists():
-#             raise serializers.ValidationError(_("Shift no already exists"))
-#         return value
-
-
-# class ShiftDetailsSerializer(serializers.ModelSerializer):
-#     shift_id = serializers.IntegerField(write_only=True)
-#     shift = ShiftSerializer(read_only=True)
-
-#     class Meta:
-#         model = ShiftDetails
-#         fields = ['id', 'shift_id', 'shift', 'grade', 'total_kgs', 'total_bags', 'batchno_grn', 'cell', 'entry_type']
-
-#     def create(self, validated_data):
-#         shift_id = validated_data.pop('shift_id')
-#         shift = Shift.objects.get(id=shift_id)
-#         return ShiftDetails.objects.create(shift=shift, **validated_data)
-
 from rest_framework import serializers
 from .models import Shift, ShiftDetails, ShiftBaggingOff, ShiftDetailsBaggingOff
 from accounts.serializers import UserSerializer
@@ -40,7 +8,7 @@ class ShiftSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Shift
-        fields = ['id', 'shift_no', 'activity', 'date', 'shift_type', 'supplier', 'coffee_type', 'output_batchno', 'location_of_batch', 'created_by', 'created_at', 'status']
+        fields = ['id', 'shift_no', 'activity', 'date', 'shift_type', 'supplier', 'coffee_type', 'output_batchno', 'location_of_batch', 'created_by', 'created_at', 'status','crop_year']
         read_only_fields = ['created_by', 'created_at']
 
     def validate_shift_no(self, value):
@@ -68,14 +36,8 @@ class ShiftBaggingOffSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ShiftBaggingOff
-        fields = ['id', 'shift_no_bagging_off', 'activity', 'date', 'status', 'created_by', 'created_at']
+        fields = ['id', 'shift_no_bagging_off', 'activity', 'date', 'status','crop_year', 'created_by', 'created_at']
         read_only_fields = ['shift_no_bagging_off', 'created_by', 'created_at']
-
-    # def create(self, validated_data):
-    #     user = self.context['request'].user
-    #     shift = ShiftBaggingOff.objects.create(created_by=user, **validated_data)
-    #     return shift
-
 
 
 class ShiftDetailsBaggingOffSerializer(serializers.ModelSerializer):
